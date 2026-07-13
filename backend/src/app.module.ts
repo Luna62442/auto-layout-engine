@@ -25,9 +25,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads';
 
+// 静态文件目录的绝对路径（项目根目录下的 uploads）
+const uploadPath = path.join(process.cwd(), UPLOAD_DIR);
+
 // 确保上传目录存在
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+  console.log(`📁 Created upload directory: ${uploadPath}`);
 }
 
 // 中间件
@@ -35,8 +39,9 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// 静态文件服务（用于访问上传的图片）
-app.use('/uploads', express.static(path.resolve(UPLOAD_DIR)));
+// 静态文件服务（挂载到 /uploads）
+app.use('/uploads', express.static(uploadPath));
+console.log(`📁 Serving static files from: ${uploadPath}`);
 
 // Multer 配置（内存存储）
 const storage = multer.memoryStorage();
@@ -45,7 +50,7 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
 });
 
-// ========== 全局基础 URL（重要） ==========
+// ========== 全局基础 URL（关键） ==========
 // 从环境变量读取，若未设置则使用 localhost（开发环境）
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 console.log(`🌐 Base URL for images: ${BASE_URL}`);
