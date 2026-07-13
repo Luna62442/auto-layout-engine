@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* ---------- 封面（竖版） ---------- */
+.cover {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  page-break-after: always;
+}
+.cover-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+.cover-title {
+  position: absolute;
+  bottom: 30%;
+  left: 10%;
+  font-size: 48px;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  font-weight: bold;
+}
+
+/* ---------- 内页 ---------- */
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  padding: 0;                /* 由内部图片容器控制边距 */
+  box-sizing: border-box;
+  page-break-after: always;
+  overflow: hidden;
+  position: relative;
+}
+
+.images-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.photo-wrapper {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border-radius: 8px;        /* 图片圆角 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* 轻微阴影 */
+  overflow: hidden;
+}
+
+.photo-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;      /* 完整显示，不裁剪 */
+  border-radius: 8px;       /* 与容器一致 */
+  box-shadow: none;
+}
+
+.text {
+  padding: 12px 20px;
+  font-size: 20px;
+  color: #222;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  text-align: center;
+  line-height: 1.6;
+  flex-shrink: 0;
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  position: relative;        /* 保证在图片之上 */
+  z-index: 10;
+}

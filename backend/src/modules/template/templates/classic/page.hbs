@@ -1,0 +1,12 @@
+<div class="page" style="{{bgStyle}}">
+  <div class="images-container">
+    {{#each images}}
+      <div class="photo-wrapper" style="left: {{left}}%; top: {{top}}%; width: {{width}}%; height: {{height}}%;">
+        <img src="{{url}}" alt="photo" class="photo-img" style="aspect-ratio: {{aspect}};" />
+      </div>
+    {{/each}}
+  </div>
+  {{#if text}}
+    <div class="text">{{text}}</div>
+  {{/if}}
+</div>
