@@ -107,7 +107,7 @@ app.post('/api/generate', upload.array('photos', 100), async (req, res) => {
       title: title || undefined,
       texts: textsArray,
     });
-    const baseUrl = `http://localhost:${PORT}`;
+    const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
     const html = layoutService.renderHtml(layoutData, 'classic', baseUrl);
 
     res.json({ html });
