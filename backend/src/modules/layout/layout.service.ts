@@ -215,52 +215,53 @@ export class LayoutService {
   }
 
   renderHtml(layoutData: LayoutData, templateId: string, baseUrl: string): string {
-    try {
-      const template = this.templateService.getTemplate(templateId);
-      if (!template) throw new Error(`Template "${templateId}" not found`);
+  try {
+    console.log(`🔗 Rendering with baseUrl: ${baseUrl}`);
+    const template = this.templateService.getTemplate(templateId);
+    if (!template) throw new Error(`Template "${templateId}" not found`);
 
-      const toAbsolute = (url: string) => {
-        try { return new URL(url, baseUrl).href; } catch { return url; }
-      };
+    const toAbsolute = (url: string) => {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+    };
 
-      const coverImageUrl = layoutData.coverImage ? toAbsolute(layoutData.coverImage) : '';
-      const coverTemplate = Handlebars.compile(template.coverHtml);
-      const pageTemplate = Handlebars.compile(template.pageHtml);
+    const coverImageUrl = layoutData.coverImage ? toAbsolute(layoutData.coverImage) : '';
+    const coverTemplate = Handlebars.compile(template.coverHtml);
+    const pageTemplate = Handlebars.compile(template.pageHtml);
 
-      const coverHtml = coverTemplate({
-        coverImage: coverImageUrl,
-        title: layoutData.title || '纪念册',
+    const coverHtml = coverTemplate({
+      coverImage: coverImageUrl,
+      title: layoutData.title || '纪念册',
+    });
+
+    const pagesHtml = layoutData.pages.map(page => {
+      const imageItems = page.images.map(img => ({
+        url: toAbsolute(img.url),
+        aspect: img.aspect || 1,
+        left: img.left,
+        top: img.top,
+        width: img.width,
+        height: img.height,
+      }));
+      const bgStyle = this.generateBackgroundStyle(page.colors || ['#f0f0f0']);
+      return pageTemplate({
+        images: imageItems,
+        text: page.text || '',
+        bgStyle,
       });
+    }).join('');
 
-      const pagesHtml = layoutData.pages.map(page => {
-        const imageItems = page.images.map(img => ({
-          url: toAbsolute(img.url),
-          aspect: img.aspect,
-          left: img.left,
-          top: img.top,
-          width: img.width,
-          height: img.height,
-        }));
-        const bgStyle = this.generateBackgroundStyle(page.colors || ['#f0f0f0']);
-        return pageTemplate({
-          images: imageItems,
-          text: page.text || '',
-          bgStyle,
-        });
-      }).join('');
-
-      return `
-        <!DOCTYPE html>
-        <html>
-          <head><meta charset="UTF-8"><title>${layoutData.title || '纪念册'}</title>
-          <style>${template.styles}</style></head>
-          <body>${coverHtml}${pagesHtml}</body>
-        </html>
-      `;
-    } catch (err) {
-      console.error('❌ renderHtml error:', err);
-      // 返回简易HTML，防止崩溃
-      return `<!DOCTYPE html><html><head><title>Error</title></head><body><h1>渲染失败</h1></body></html>`;
-    }
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head><meta charset="UTF-8"><title>${layoutData.title || '纪念册'}</title>
+        <style>${template.styles}</style></head>
+        <body>${coverHtml}${pagesHtml}</body>
+      </html>
+    `;
+  } catch (err) {
+    console.error('❌ renderHtml error:', err);
+    throw err;
   }
 }
